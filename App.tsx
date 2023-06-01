@@ -1,145 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {Fragment, useRef, useState} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Alert,
-  Image,
-  Animated,
-} from 'react-native';
-import {SketchCanvas, SketchCanvasRef} from 'rn-perfect-sketch-canvas';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
-import BottomBar from './src/components/BottomBar';
-import {
-  runOnJS,
-  runOnUI,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
-
-const COLORS = ['red', 'blue', 'green', 'magenta', 'yellow', 'black', 'pink'];
-
+import React, {useEffect} from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import DrawingPage from './src/pages/DrawingPage';
+import ImagePage from './src/pages/ImagePage';
+const Stack = createNativeStackNavigator();
 function App(): JSX.Element {
-  const ref = useRef<SketchCanvasRef>(null!);
-
-  const [image, setImage] = useState<any>(
-    'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
-  );
-  const [color, setColor] = useState('black');
-  const [strokeWidth, setStrokeWidth] = useState(1);
-
-  const handleSaveImage = () => {
-    let image = ref.current?.toBase64();
-    if (image) {
-      setImage(`data:image/jpeg;base64,${image}`);
-    }
-  };
-
-  const pinchGesture = Gesture.Pinch()
-    .onUpdate(e => {
-      console.log('Sdas');
-    })
-    .onEnd(() => {
-      console.log('Sdas2');
-    });
-
-  const handleUndo = () => {
-    ref?.current?.undo();
-  };
-
-  const handleRedo = () => {
-    ref?.current?.redo();
-  };
-  const handleReset = () => {
-    ref?.current?.reset();
-  };
-
-  const handleColorchange = () => {
-    const randomIndex = Math.floor(Math.random() * COLORS.length);
-    setColor(COLORS[randomIndex]);
-  };
-
-  const handleWidthChange = () => {
-    const randomIndex = Math.floor(Math.random() * COLORS.length);
-    setStrokeWidth(randomIndex);
-  };
-
-  const panGesture = Gesture.Pan()
-    .onUpdate(e => {
-      console.log('Sdas');
-    })
-    .onEnd(e => {
-      if (e?.translationX > 0) {
-        runOnJS(handleRedo)();
-      } else {
-        runOnJS(handleUndo)();
-      }
-    });
-
-  const singleTap = Gesture.Tap()
-    .maxDuration(250)
-    .minPointers(2)
-    .onStart(() => {
-      runOnJS(handleColorchange)();
-    });
-
-  const doubleTap = Gesture.Tap()
-    .maxDuration(250)
-    .numberOfTaps(2)
-    .onStart(() => {
-      runOnJS(handleWidthChange)();
-    });
-
-  const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
-    console.log(e);
-    if (success) {
-      runOnJS(handleSaveImage)();
-    }
-  });
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.btnContainer}>
-        <SketchCanvas
-          containerStyle={styles.canvas}
-          ref={ref}
-          strokeColor={color}
-          strokeWidth={strokeWidth}
-        />
-        <GestureHandlerRootView style={styles.gestureControlView}>
-          <GestureDetector
-            gesture={Gesture.Exclusive(
-              singleTap,
-              doubleTap,
-              longPressGesture,
-              pinchGesture,
-              panGesture,
-            )}>
-            <Image
-              style={[styles.image]}
-              source={{
-                uri: image,
-              }}
-            />
-          </GestureDetector>
-        </GestureHandlerRootView>
-      </View>
-      <BottomBar
-        color={color}
-        save={handleSaveImage}
-        undo={handleUndo}
-        redo={handleRedo}
-        reset={handleReset}
-        changePenColor={handleColorchange}
-        changePenWidth={handleWidthChange}
-        width={strokeWidth}
-      />
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Drawing" component={DrawingPage} />
+          <Stack.Screen name="Image" component={ImagePage} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaView>
   );
 }
@@ -148,37 +27,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
-  },
-  btnContainer: {
-    flexDirection: 'column',
-    paddingHorizontal: 10,
-    flexWrap: 'wrap',
-    marginBottom: 0,
-    width: '100%',
-    height: 500,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  canvas: {
-    borderWidth: 1,
-    flex: 1,
-    backgroundColor: '#FFF',
-    width: '100%',
-    height: '100%',
-    marginTop: 10,
-  },
-  gestureControlView: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  box: {
-    width: '100px',
-    height: '100px',
-    backgroundColor: '#f2f',
   },
 });
 

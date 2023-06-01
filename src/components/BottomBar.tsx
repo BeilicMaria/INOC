@@ -70,7 +70,7 @@ const BottomBar = (props: Props) => {
 
 const styles = StyleSheet.create({
   bottom: {
-    backgroundColor: '#596E79',
+    backgroundColor: '#BA90C6',
     position: 'absolute',
     left: 0,
     right: 0,
