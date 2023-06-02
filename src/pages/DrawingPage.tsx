@@ -201,23 +201,19 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   canvas: {
-    borderWidth: 1,
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: '#ffffee',
     width: '100%',
     height: '100%',
     marginTop: 10,
+    elevation: 20,
+    shadowColor: '#52006A',
   },
   gestureControlView: {
     flex: 1,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  box: {
-    width: '100px',
-    height: '100px',
-    backgroundColor: '#f2f',
   },
 });
 
